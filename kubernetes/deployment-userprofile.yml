@@ -1,21 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user
+  name: userprofile
   namespace: rudra
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: userapi
+      app: userprofile
   template:
     metadata:
       labels:
-        app: userapi
+        app: userprofile
     spec:
       containers:
-      - name: user-api
-        image: registryjrc4068.azurecr.io/rudra/userapi:v1        
+      - name: userprofile-api
+        image: registryjrc4068.azurecr.io/rudra/userprofile:v1 
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "1024m"
         env :
         - name: SQL_PASSWORD
           value: "kQ9pg2Kl9"
@@ -32,11 +36,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: userapi
+  name: userprofileapi
   namespace: rudra
 spec:
   selector:
-    app: userapi
+    app: userprofile
   ports:
   - port: 80
     targetPort: 80

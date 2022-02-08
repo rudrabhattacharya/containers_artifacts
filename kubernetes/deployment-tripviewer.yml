@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer-app
+  namespace: rudra
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      containers:
+      - name: tripviewer-api
+        image: registryjrc4068.azurecr.io/rudra/tripviewer:v1 
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "1024m"
+        env :
+        - name: USERPROFILE_API_ENDPOINT
+          value: "http://userprofileapi"
+        - name: TRIPS_API_ENDPOINT
+          value: "http://tripsapi"
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tripviewerapi
+  namespace: rudra
+spec:
+  selector:
+    app: tripviewer
+  ports:
+  - port: 80
+    targetPort: 80
+
