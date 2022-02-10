@@ -4,7 +4,7 @@ metadata:
   name: tripviewer-app
   namespace: rudra
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: tripviewer
@@ -22,9 +22,9 @@ spec:
             cpu: "1024m"
         env :
         - name: USERPROFILE_API_ENDPOINT
-          value: "http://userprofileapi"
+          value: "http://userprofile-svc.rudra.svc.cluster.local"
         - name: TRIPS_API_ENDPOINT
-          value: "http://tripsapi"
+          value: "http://trips-svc.rudra.svc.cluster.local"
         ports:
         - containerPort: 80
 
@@ -32,7 +32,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tripviewerapi
+  name: tripviewer-svc
   namespace: rudra
 spec:
   selector:
@@ -40,4 +40,6 @@ spec:
   ports:
   - port: 80
     targetPort: 80
+  type: LoadBalancer
+
 

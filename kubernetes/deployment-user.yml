@@ -15,16 +15,28 @@ spec:
     spec:
       containers:
       - name: user-api
-        image: registryjrc4068.azurecr.io/rudra/userapi:v1        
+        image: registryjrc4068.azurecr.io/rudra/userapi:v1 
         env :
         - name: SQL_PASSWORD
-          value: "kQ9pg2Kl9"
+          valueFrom: 
+            secretKeyRef:
+              name: sql-db-credentials
+              key: sql-password
         - name: SQL_SERVER
-          value: "sqlserverjrc4068"
+          valueFrom: 
+            secretKeyRef:
+              name: sql-db-credentials
+              key: sql-server-name
         - name: SQL_USER
-          value: "sqladminjRc4068"
+          valueFrom:
+            secretKeyRef:
+              name: sql-db-credentials
+              key: sql-username
         - name: SQL_DBNAME
-          value: "mydrivingDB"
+          valueFrom:
+            secretKeyRef:
+              name: sql-db-credentials
+              key: sql-db-name
         ports:
         - containerPort: 80
 
@@ -32,7 +44,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: userapi
+  name: user-svc
   namespace: rudra
 spec:
   selector:
