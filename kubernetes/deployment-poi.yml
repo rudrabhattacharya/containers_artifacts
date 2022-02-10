@@ -2,9 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: poi
-  namespace: rudra
+  namespace: api
+  labels:
+    aadpodidbinding: openhack-pod-identity  
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: poi
@@ -29,32 +31,42 @@ spec:
         - name: SQL_PASSWORD
           valueFrom: 
             secretKeyRef:
-              name: sql-db-credentials
-              key: sql-password
+              name: azure-kvname-podid
+              key: SQLPASSWORD
         - name: SQL_SERVER
           valueFrom: 
             secretKeyRef:
-              name: sql-db-credentials
-              key: sql-server-name
+              name: azure-kvname-podid
+              key: SQLSERVER
         - name: SQL_USER
           valueFrom:
             secretKeyRef:
-              name: sql-db-credentials
-              key: sql-username
+              name: azure-kvname-podid
+              key: SQLUSER
         - name: SQL_DBNAME
           valueFrom:
             secretKeyRef:
-              name: sql-db-credentials
-              key: sql-db-name
+              name: azure-kvname-podid
+              key: SQLDBNAME
         ports:
         - containerPort: 80
-
+        volumeMounts:
+        - name: secrets-store01-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+      volumes:
+        - name: secrets-store01-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-kvname-podid"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: poi-svc
-  namespace: rudra
+  namespace: api
 spec:
   selector:
     app: poi
